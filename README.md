@@ -9,154 +9,127 @@
 
 ## Domain
 
-<!-- What topic or category of knowledge does your system cover?
-     Why is this knowledge valuable, and why is it hard to find through official channels?
-     Example: "Student reviews of CS professors at [university] — useful because official
-     course descriptions don't reflect teaching style, exam difficulty, or workload." -->
+UMass Amherst CS professor and course reviews. Students often rely on scattered information from Reddit discussions, Rate My Professor reviews, and informal student recommendations when selecting courses and professors. Official university resources provide course descriptions and instructor names but do not capture student experiences such as workload, teaching quality, exam difficulty, grading style, and professor accessibility.
 
 ---
 
 ## Document Sources
 
-<!-- List every source you collected documents from.
-     Be specific: include URLs, subreddit names, forum thread titles, or file names.
-     Aim for variety — sources that together cover different subtopics or perspectives. -->
-
 | # | Source | Type | URL or file path |
 |---|--------|------|-----------------|
-| 1 | | | |
-| 2 | | | |
-| 3 | | | |
-| 4 | | | |
-| 5 | | | |
-| 6 | | | |
-| 7 | | | |
-| 8 | | | |
-| 9 | | | |
-| 10 | | | |
+| 1 | CS187 Reviews | Text file | documents/cs187_reviews.txt |
+| 2 | CS220 Reviews | Text file | documents/cs220_reviews.txt |
+| 3 | CS250 Reviews | Text file | documents/cs250_reviews.txt |
+| 4 | CS311 Reviews | Text file | documents/cs311_reviews.txt |
+| 5 | Professor Reviews 1 | Text file | documents/professor_reviews_1.txt |
+| 6 | Professor Reviews 2 | Text file | documents/professor_reviews_2.txt |
+| 7 | Reddit Easy Courses | Text file | documents/reddit_easy_courses.txt |
+| 8 | Reddit Hard Courses | Text file | documents/reddit_hard_courses.txt |
+| 9 | Reddit Best Professors | Text file | documents/reddit_best_professors.txt |
+| 10 | Reddit CS Advice | Text file | documents/reddit_cs_advice.txt |
 
 ---
 
 ## Chunking Strategy
 
-<!-- Describe your chunking approach with enough specificity that someone else could reproduce it.
-     Include:
-     - Chunk size (characters or tokens) and why that size fits your documents
-     - Overlap size and why (or why not) you used overlap
-     - Any preprocessing you did before chunking (e.g., stripping HTML, removing headers)
-     - What your final chunk count was across all documents -->
+**Chunk size:** 500 characters
 
-**Chunk size:**
-
-**Overlap:**
+**Overlap:** 100 characters
 
 **Why these choices fit your documents:**
 
-**Final chunk count:**
+Most documents consist of short reviews and student comments. A 500-character chunk preserves complete opinions while remaining focused on a single topic. A 100-character overlap helps prevent useful information from being split across chunk boundaries.
+
+**Final chunk count:** 11
 
 ---
 
 ## Embedding Model
 
-<!-- Name the embedding model you used and explain your choice.
-     Then answer: if you were deploying this system for real users and cost wasn't a constraint,
-     what tradeoffs would you weigh in choosing a different model?
-     Consider: context length limits, multilingual support, accuracy on domain-specific text,
-     latency, and local vs. API-hosted. -->
-
 **Model used:**
+
+all-MiniLM-L6-v2
 
 **Production tradeoff reflection:**
 
+I selected all-MiniLM-L6-v2 because it is lightweight, fast, free, and runs locally. For production use, I would consider retrieval accuracy, multilingual support, latency, context length, and infrastructure cost. Larger models may improve semantic understanding but would increase resource requirements.
 ---
 
 ## Grounded Generation
 
-<!-- Explain how your system enforces grounding — how does it prevent the LLM from answering
-     beyond the retrieved documents?
-     Describe both your system prompt (what instruction you gave the model) and any structural
-     choices (e.g., how you formatted the context, whether you filtered low-relevance chunks).
-     Do not just say "I told it to use the documents" — show the actual instruction or explain
-     the mechanism. -->
+**Question that failed:**
 
-**System prompt grounding instruction:**
+What do students say about biology courses?
 
-**How source attribution is surfaced in the response:**
+**What the system returned:**
+
+It stated that insufficient information was available.
+
+**Root cause (tied to a specific pipeline stage):**
+
+The retrieval stage could not find relevant chunks because the document collection only contains computer science course reviews.
+
+**What you would change to fix it:**
+
+Expand the document collection to include reviews from additional academic departments.
 
 ---
 
 ## Evaluation Report
 
-<!-- Run your 5 test questions from planning.md through your system and record the results.
-     Be honest — a partially accurate or inaccurate result that you explain well is more
-     valuable than a suspiciously perfect result. -->
-
 | # | Question | Expected answer | System response (summarized) | Retrieval quality | Response accuracy |
 |---|----------|-----------------|------------------------------|-------------------|-------------------|
-| 1 | | | | | |
-| 2 | | | | | |
-| 3 | | | | | |
-| 4 | | | | | |
-| 5 | | | | | |
-
-**Retrieval quality:** Relevant / Partially relevant / Off-target  
-**Response accuracy:** Accurate / Partially accurate / Inaccurate
+| 1 | What do students say about CS220 workload? | Moderate to high workload | Correctly summarized workload and project deadlines | Relevant | Accurate |
+| 2 | Which courses are considered difficult? | CS250 and CS311 | Correctly identified CS250 and CS311 | Relevant | Accurate |
+| 3 | Which courses are beginner friendly? | CS187 and CS220 | Correctly identified beginner-friendly courses | Relevant | Accurate |
+| 4 | Which professor is most recommended? | Professor A | Correctly identified Professor A | Relevant | Accurate |
+| 5 | What do students say about biology courses? | No information available | Returned insufficient information response | Relevant | Accurate |
 
 ---
 
 ## Failure Case Analysis
 
-<!-- Identify at least one question where retrieval or generation did not work as expected.
-     Write a specific explanation of *why* it failed, tied to a part of the pipeline.
-
-     "The answer was wrong" is not an explanation.
-
-     "The relevant information was split across a chunk boundary, so retrieval returned
-     only half the context — the model didn't have enough to answer correctly" is an explanation.
-
-     "The embedding model treated the professor's nickname as out-of-vocabulary and returned
-     results from an unrelated review" is an explanation. -->
-
 **Question that failed:**
+
+What do students say about biology courses?
 
 **What the system returned:**
 
+It stated that insufficient information was available.
+
 **Root cause (tied to a specific pipeline stage):**
 
+The retrieval stage could not find relevant chunks because the document collection only contains computer science course reviews.
+
 **What you would change to fix it:**
+
+Expand the document collection to include reviews from additional academic departments.
 
 ---
 
 ## Spec Reflection
 
-<!-- Reflect on how planning.md shaped your implementation.
-     Answer both questions with at least 2–3 sentences each. -->
-
 **One way the spec helped you during implementation:**
 
+The planning document helped define the chunking strategy, retrieval approach, and evaluation questions before implementation. Having these decisions documented made it easier to build the pipeline step by step.
+
 **One way your implementation diverged from the spec, and why:**
+
+The original plan assumed a larger collection of reviews. Due to time constraints, I used a smaller set of curated text documents while still maintaining the required retrieval and generation workflow.
 
 ---
 
 ## AI Usage
 
-<!-- Describe at least 2 specific instances where you used an AI tool during this project.
-     For each: what did you give the AI as input, what did it produce, and what did you
-     change, override, or direct differently?
-
-     "I used Claude to help me code" is not sufficient.
-     "I gave Claude my Chunking Strategy section from planning.md and asked it to implement
-     chunk_text(). It returned a function using a fixed character split. I overrode the
-     chunk size from 500 to 200 because my documents are short reviews, not long guides." -->
-
 **Instance 1**
 
-- *What I gave the AI:*
-- *What it produced:*
-- *What I changed or overrode:*
+* **What I gave the AI:** I asked questions about how a Retrieval-Augmented Generation (RAG) system works, including embeddings, vector databases, semantic search, and how retrieved documents are used during answer generation.
+* **What it produced:** It explained the role of sentence-transformer embeddings, ChromaDB for vector storage, and the retrieval workflow used in a RAG pipeline.
+* **What I changed or overrode:** I applied those concepts to my own project by using the all-MiniLM-L6-v2 embedding model, ChromaDB, and my collection of UMass CS review documents. I also verified retrieval quality by examining the returned chunks for my evaluation questions.
 
 **Instance 2**
 
-- *What I gave the AI:*
-- *What it produced:*
-- *What I changed or overrode:*
+* **What I gave the AI:** I asked for help debugging issues encountered during development, including creating and activating a virtual environment, configuring the Groq API key, resolving GitHub authentication errors during git push, and connecting the retrieval pipeline to the Gradio interface.
+* **What it produced:** It suggested troubleshooting steps, configuration changes, and explanations of the error messages.
+* **What I changed or overrode:** I tested the proposed fixes, selected the solutions that worked in my development environment, and verified the final behavior by successfully running the application, retrieving relevant documents, generating answers, and pushing the completed project to GitHub.
+
