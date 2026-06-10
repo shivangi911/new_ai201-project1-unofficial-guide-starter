@@ -32,15 +32,15 @@ UMass Amherst CS professor and course reviews. Students often rely on scattered 
 
 ## Chunking Strategy
 
-**Chunk size:** 500 characters
+**Chunk size:** 150 characters
 
-**Overlap:** 100 characters
+**Overlap:** 30 characters
 
 **Why these choices fit your documents:**
 
 Most documents consist of short reviews and student comments. A 500-character chunk preserves complete opinions while remaining focused on a single topic. A 100-character overlap helps prevent useful information from being split across chunk boundaries.
 
-**Final chunk count:** 11
+**Final chunk count:** 18
 
 ---
 
