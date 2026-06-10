@@ -11,6 +11,8 @@
 
 <!-- What domain did you choose? Why is this knowledge valuable and hard to find through official channels? -->
 
+I chose UMass Amherst CS professor and course reviews. Students often rely on scattered information from Reddit discussions, Rate My Professor reviews, and informal student recommendations when selecting courses and professors. Official university websites provide course descriptions but do not capture student experiences such as workload, teaching quality, exam difficulty, grading style, and helpfulness. This system makes that information searchable and easier to access.
+
 ---
 
 ## Documents
@@ -20,16 +22,16 @@
 
 | # | Source | Description | URL or location |
 |---|--------|-------------|-----------------|
-| 1 | | | |
-| 2 | | | |
-| 3 | | | |
-| 4 | | | |
-| 5 | | | |
-| 6 | | | |
-| 7 | | | |
-| 8 | | | |
-| 9 | | | |
-| 10 | | | |
+| 1 | CS187 Reviews | Student reviews and opinions about CS187 | documents/cs187_reviews.txt |
+| 2 | CS220 Reviews | Student reviews and opinions about CS220 | documents/cs220_reviews.txt |
+| 3 | CS250 Reviews | Student reviews and opinions about CS250 | documents/cs250_reviews.txt |
+| 4 | CS311 Reviews | Student reviews and opinions about CS311 | documents/cs311_reviews.txt |
+| 5 | Professor Reviews 1 | Student comments about a CS professor | documents/professor_reviews_1.txt |
+| 6 | Professor Reviews 2 | Student comments about a CS professor | documents/professor_reviews_2.txt |
+| 7 | Reddit Thread 1 | Discussion about easiest CS courses | documents/reddit_easy_courses.txt |
+| 8 | Reddit Thread 2 | Discussion about difficult CS courses | documents/reddit_hard_courses.txt |
+| 9 | Reddit Thread 3 | Discussion about best professors | documents/reddit_best_professors.txt |
+| 10 | Reddit Thread 4 | General UMass CS advice | documents/reddit_cs_advice.txt |
 
 ---
 
@@ -40,11 +42,11 @@
      numbers fit the structure of your documents.
      A review-heavy corpus warrants different chunking than a long FAQ. -->
 
-**Chunk size:**
+**Chunk size:** 500 characters
 
-**Overlap:**
+**Overlap:** 100 characters
 
-**Reasoning:**
+**Reasoning:** Most of my documents consist of student reviews, Reddit discussions, and course feedback. A chunk size of 500 characters is large enough to preserve complete opinions and recommendations while remaining focused on a single topic. A 100-character overlap helps prevent important information from being split across chunk boundaries.
 
 ---
 
@@ -56,11 +58,11 @@
      would you weigh in choosing a different embedding model — context length, multilingual
      support, accuracy on domain-specific text, latency? -->
 
-**Embedding model:**
+**Embedding model:** all-MiniLM-L6-v2
 
-**Top-k:**
+**Top-k:** 5
 
-**Production tradeoff reflection:**
+**Production tradeoff reflection:** all-MiniLM-L6-v2 is lightweight, fast, and free to run locally. In a production system, I would also consider retrieval accuracy, latency, multilingual support, context length, and cost when selecting an embedding model.
 
 ---
 
@@ -73,11 +75,11 @@
 
 | # | Question | Expected answer |
 |---|----------|-----------------|
-| 1 | | |
-| 2 | | |
-| 3 | | |
-| 4 | | |
-| 5 | | |
+| 1 | What do students say about CS220 workload? | Summary of workload comments found in the documents |
+| 2 | Which professor is most frequently recommended? | The professor receiving the most positive feedback |
+| 3 | What course do students consider the most difficult? | The course most often described as difficult |
+| 4 | What advice do students give for succeeding in CS220? | Recommendations appearing in the reviews |
+| 5 | Which courses are considered beginner-friendly? | Courses frequently recommended for beginners |
 
 ---
 
@@ -87,9 +89,9 @@
      Consider: noisy or inconsistent documents, missing source attribution, off-topic
      retrieval, chunks that split key information across boundaries. -->
 
-1.
+1. Student reviews may be subjective and sometimes contradictory.
 
-2.
+2. Important information may be split across chunk boundaries, reducing retrieval quality.
 
 ---
 
@@ -100,6 +102,17 @@
      Label each stage with the tool or library you're using.
      You can use ASCII art, a Mermaid diagram, or embed a sketch as an image.
      You'll use this diagram as context when prompting AI tools to implement each stage. -->
+
+     ```mermaid
+graph LR
+A[Documents] --> B[Ingestion and Cleaning]
+B --> C[Chunking]
+C --> D[Embeddings: all-MiniLM-L6-v2]
+D --> E[ChromaDB]
+E --> F[Retrieval Top-K]
+F --> G[Groq LLM]
+G --> H[Answer + Sources]
+```
 
 ---
 
@@ -117,6 +130,12 @@
 
 **Milestone 3 — Ingestion and chunking:**
 
+I will use ChatGPT to help implement document loading, cleaning, and chunking. I will verify the generated code by inspecting sample chunks.
+
 **Milestone 4 — Embedding and retrieval:**
 
+I will use ChatGPT to help generate code for creating embeddings using all-MiniLM-L6-v2 and storing them in ChromaDB. I will verify retrieval quality using evaluation questions.
+
 **Milestone 5 — Generation and interface:**
+
+I will use ChatGPT to help integrate Groq with the retrieval pipeline and build a Gradio interface. I will verify that answers are generated only from retrieved context and include source attribution.
