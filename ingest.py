@@ -8,25 +8,31 @@ def load_documents():
 
     for file in Path(DOCUMENTS_DIR).glob("*.txt"):
         text = file.read_text(encoding="utf-8")
+        text = " ".join(text.split())
 
-        documents.append(
-            {
-                "source": file.name,
-                "text": text
-            }
-        )
+        if text.strip():
+            documents.append(
+                {
+                    "source": file.name,
+                    "text": text
+                }
+            )
 
     return documents
 
 
-def chunk_text(text, chunk_size=500, overlap=100):
+def chunk_text(text, chunk_size=150, overlap=30):
     chunks = []
 
     start = 0
 
     while start < len(text):
         end = start + chunk_size
-        chunks.append(text[start:end])
+        chunk = text[start:end].strip()
+
+        if chunk:
+            chunks.append(chunk)
+
         start += chunk_size - overlap
 
     return chunks
@@ -37,10 +43,14 @@ if __name__ == "__main__":
 
     print(f"Loaded {len(docs)} documents")
 
-    for doc in docs[:2]:
-        print("\nSOURCE:", doc["source"])
+    total_chunks = 0
 
+    for doc in docs:
         chunks = chunk_text(doc["text"])
+        total_chunks += len(chunks)
 
+        print("\nSOURCE:", doc["source"])
         print("Chunks:", len(chunks))
-        print(chunks[0])
+        print("Sample:", chunks[0])
+
+    print("\nTotal chunks:", total_chunks)
